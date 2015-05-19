@@ -38,9 +38,10 @@ void loop(){
 
 
 void initEthernet(){
-  if (ether.begin(sizeof Ethernet::buffer, mymac) == 0) 
-      Serial.println( F("Failed to access Ethernet controller") );
-      drawText("FAILED access", 1);
+  if (ether.begin(sizeof Ethernet::buffer, mymac) == 0) {
+    Serial.println( F("Failed to access Ethernet controller") );
+    drawText("FAILED access", 1);
+  }
   #if STATIC
     ether.staticSetup(myip, gwip);
   #else
@@ -51,7 +52,7 @@ void initEthernet(){
   ether.printIp("IP:  ", ether.myip);
   ether.printIp("GW:  ", ether.gwip);
   ether.printIp("DNS: ", ether.dnsip);
-  
+
   if (!ether.dnsLookup(website))
     Serial.println("failed target lookup");
 
