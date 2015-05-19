@@ -16,6 +16,8 @@ static byte gwip[] = { 192,168,0,1 };
 static byte mymac[] = { 0x74,0x69,0x69,0x2D,0x30,0x31 };
 byte Ethernet::buffer[700]; // tcp/ip send and receive buffer
 const char website[] PROGMEM = "192.168.0.56:3000/api/button0";
+static uint32_t timer;
+
 
 void setup(){
   Serial.begin(57600);
@@ -30,8 +32,32 @@ void setup(){
 
 void loop(){
   ether.packetLoop(ether.packetReceive());
+
+  if (millis() > timer) {
+    timer = millis() + 5000; // Set timer to 5 seconds in the future
+    Serial.println();
+    Serial.print("<<< REQ ");
+
+    // void EtherCard::browseUrl 
+    //           path_part              "filename"
+    // (const char *urlbuf, const char *urlbuf_varpart, const char *hoststr, void (*callback)(uint8_t,uint16_t,uint16_t))
+    //
+    // I might need to specify port manually somehow...
+    ether.browseUrl(PSTR("/foo/"), "bar", website, my_callback);
+  }
 }
 
+
+
+
+
+// called when the client request is complete
+static void my_callback (byte status, word off, word len) {
+  Serial.println(">>>");
+  Ethernet::buffer[off+300] = 0;
+  Serial.print((const char*) Ethernet::buffer + off);
+  Serial.println("...");
+}
 
 
 
