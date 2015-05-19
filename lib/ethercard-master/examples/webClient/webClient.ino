@@ -42,7 +42,7 @@ void loop () {
   ether.packetLoop(ether.packetReceive());
   
   if (millis() > timer) {
-    timer = millis() + 5000;
+    timer = millis() + 5000; // Set timer to 5 seconds in the future
     Serial.println();
     Serial.print("<<< REQ ");
     ether.browseUrl(PSTR("/foo/"), "bar", website, my_callback);
