@@ -20,6 +20,8 @@ Computer that can ping and has a web browser
 
 ## Wiring
 
+### Ethernet Board
+
 The board to board interface used is SPI, utilizing 6 wires including ground.  
 
 (Ethernet Pins - Yours may differ)
@@ -48,6 +50,50 @@ CS  -> pin 8
 VCC -> 3.3v
 GND -> GND
 ```
+
+### LCD Display
+
+(LCD Pins (says J204A on back... HDsomething... they're all the same I guess...))
+```
+#1:  vss
+#2:  vdd
+#3:  v0
+#4:  rs
+#5:  rw
+#6:  e
+#7:  d0
+#8:  d1
+#9:  d2
+#10: d3
+#11: d4
+#12: d5
+#13: d6
+#14: d7
+#15: a (backlight 5v)
+#16: k (backlight gnd)
+```
+
+(LCD -> Arduino)
+```
+vss -> GND
+vdd -> 5v
+v0  -> ((POT middle pin))
+rs  -> pin 10
+rw  -> GND
+e   -> pin 9
+.
+.
+.
+d4  -> pin 5
+d5  -> pin 4
+d6  -> pin 3
+d7  -> pin 2
+a   -> 5v
+k   -> GND
+```
+
+
+
 
 ## To Deploy
 
