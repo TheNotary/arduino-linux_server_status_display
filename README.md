@@ -112,13 +112,23 @@ Notice this code utilizes the ether_card library.
 
 ## Device Operation
 
-When the device is powered up, and plugged into an ethernet network, it will be pingable form another computer on the same subnet (192.168.0.0/24).  If you can ping, you should also be able to type it's IP address into a web browser and see the html that's been hardcoded into the source code.  
+When the device is powered up, and plugged into an ethernet network, it will put it's IP as 192.168.0.200.  
+  
+Display:
+  * The LCD will display will state "Cannot See Server" if it can't access the specified server with the associated service running.  
 
-    # ping 192.168.0.200
-    # do http get request to address
+  Alternatively...
 
+  * The LCD will display "Service x on" 
+
+When button 0 is pressed, it will send a signal to the server to stop the service.  The display will read "Disabling service x..." and eventual report "Service x off"
+
+When button 1 is pressed, it will send a signal to the server to query the internet to check that it's still got network connectivity.  
+
+You can add more buttons and modify the service code easily!  But it's in another repo and written in a higher level language for obvious reasons :)
 
 ## Resources
 
-[tut](http://nathanhein.com/2013/02/getting-arduino-online-with-an-enc28j60/)
+[tut on ethernet](http://nathanhein.com/2013/02/getting-arduino-online-with-an-enc28j60/)
+
 
