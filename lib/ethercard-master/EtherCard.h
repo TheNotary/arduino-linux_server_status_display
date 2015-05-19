@@ -351,6 +351,18 @@ public:
                            const char *hoststr,
                            void (*callback)(uint8_t,uint16_t,uint16_t));
 
+    /**   @brief  Prepare HTTP request
+    *     @param  urlbuf Pointer to c-string URL folder
+    *     @param  urlbuf_varpart Pointer to c-string URL file
+    *     @param  hoststr Pointer to c-string hostname
+    *     @param  port Port of target
+    *     @param  callback Pointer to callback function to handle response
+    *     @note   Request sent in main packetloop
+    */
+    static void browseUrl (const char *urlbuf, const char *urlbuf_varpart,
+                           const char *hoststr, uint16_t port,
+                           void (*callback)(uint8_t,uint16_t,uint16_t));
+
     /**   @brief  Prepare HTTP post message
     *     @param  urlbuf Pointer to c-string URL folder
     *     @param  hoststr Pointer to c-string hostname

@@ -565,6 +565,12 @@ static uint8_t www_client_internal_result_cb(uint8_t fd, uint8_t statuscode, uin
     return 0;
 }
 
+void EtherCard::browseUrl (const char *urlbuf, const char *urlbuf_varpart, const char *hoststr, uint16_t port, void (*callback)(uint8_t,uint16_t,uint16_t)) {
+    hisport = 3000;
+    browseUrl(urlbuf, urlbuf_varpart, hoststr, PSTR("Accept: text/html"), callback);
+    hisport = 80;
+}
+
 void EtherCard::browseUrl (const char *urlbuf, const char *urlbuf_varpart, const char *hoststr, void (*callback)(uint8_t,uint16_t,uint16_t)) {
     browseUrl(urlbuf, urlbuf_varpart, hoststr, PSTR("Accept: text/html"), callback);
 }
