@@ -15,7 +15,8 @@ static byte gwip[] = { 192,168,0,1 };
 // ethernet mac address - must be unique on your network
 static byte mymac[] = { 0x74,0x69,0x69,0x2D,0x30,0x31 };
 byte Ethernet::buffer[700]; // tcp/ip send and receive buffer
-const char website[] PROGMEM = "192.168.0.56:3000/api/button0";
+const char website[] PROGMEM = "192.168.0.56:3000";  // /api/button0
+const char controller[] PROGMEM = "/api/";
 static uint32_t timer;
 
 
@@ -43,8 +44,11 @@ void loop(){
     // (const char *urlbuf, const char *urlbuf_varpart, const char *hoststr, void (*callback)(uint8_t,uint16_t,uint16_t))
     //
     // I might need to specify port manually somehow...
-    ether.browseUrl(PSTR("/foo/"), "bar", website, my_callback);
+    //ether.browseUrl(PSTR("/api/"), "button0", website, my_callback);
+    ether.browseUrl(controller, "button0", website, my_callback);
   }
+
+  // delay(10);  // don't burn out the ethernet chip!  =)
 }
 
 
