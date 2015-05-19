@@ -15,32 +15,34 @@ static byte gwip[] = { 192,168,0,1 };
 
 // ethernet mac address - must be unique on your network
 static byte mymac[] = { 0x74,0x69,0x69,0x2D,0x30,0x31 };
-byte Ethernet::buffer[700]; // tcp/ip send and receive buffer
+byte Ethernet::buffer[500]; // tcp/ip send and receive buffer
 const char website[] PROGMEM = "www.google.com";
 
 
 void setup(){
   Serial.begin(57600);
 
-  LCD.begin(16,4);
-  drawText();
+  LCD.begin(20,4);
+  drawText(F("Hi there"));
 
   
   initEthernet();
 
-  LCD.setCursor(0,0);
-  LCD.print("Got to end");
+  //LCD.setCursor(0,0);
+  drawText(F("Got to end"),3);
   
 }
 
 void loop(){
+  ether.packetLoop(ether.packetReceive());
 }
 
 
 
 void initEthernet(){
   if (ether.begin(sizeof Ethernet::buffer, mymac) == 0) 
-      Serial.println( "Failed to access Ethernet controller");
+      Serial.println( F("Failed to access Ethernet controller") );
+      drawText("FAILED access", 1);
   #if STATIC
     ether.staticSetup(myip, gwip);
   #else
@@ -51,12 +53,17 @@ void initEthernet(){
   ether.printIp("IP:  ", ether.myip);
   ether.printIp("GW:  ", ether.gwip);
   ether.printIp("DNS: ", ether.dnsip);
+  drawText("ether.myip", 2);
 }
 
 
-void drawText(){
-  LCD.setCursor(0,0);  //Set LCD cursor to upper left corner, column 0, row 0
-  LCD.print("My Timer:");  //Print Message on First Row
+void drawText(String msg) {
+  drawText(msg, 0);
+}
+
+void drawText(String msg, uint8_t line) {
+  LCD.setCursor(0,line);  //Set LCD cursor to upper left corner, column 0, row 0
+  LCD.print(msg);  //Print Message on First Row
 }
 
 
