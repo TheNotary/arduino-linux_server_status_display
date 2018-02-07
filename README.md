@@ -113,13 +113,13 @@ Notice this code utilizes the ether_card library.
 ## Device Operation
 
 When the device is powered up, and plugged into an ethernet network, it will put it's IP as 192.168.0.200.  
-  
+
 Display:
   * The LCD will display will state "Cannot See Server" if it can't access the specified server with the associated service running.  
 
   Alternatively...
 
-  * The LCD will display "Service x on" 
+  * The LCD will display "Service x on"
 
 When button 0 is pressed, it will send a signal to the server to stop the service.  The display will read "Disabling service x..." and eventual report "Service x off"
 
@@ -130,5 +130,3 @@ You can add more buttons and modify the service code easily!  But it's in anothe
 ## Resources
 
 [tut on ethernet](http://nathanhein.com/2013/02/getting-arduino-online-with-an-enc28j60/)
-
-
