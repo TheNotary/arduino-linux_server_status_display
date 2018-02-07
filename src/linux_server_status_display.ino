@@ -18,7 +18,7 @@ const char website[] PROGMEM = "192.168.1.56";  // /api/button0
 const char controller[] PROGMEM = "/api/";
 char   stringBuffer[19 + 1];  //buffer used to format a line (+1 is for trailing 0)
 static uint32_t timer;
-static uint32_t requestCount = 0;
+static int requestCount = 0;
 
 const char page[] PROGMEM =
 "HTTP/1.0 200 OK\r\n"
@@ -43,46 +43,60 @@ void setup() {
 }
 
 void loop() {
+  restfulServerPoll();
+  // performWebRequests()
+}
+
+// this function polls the ethernet device's data buffer to see if a TCP packet
+// has come in.  If so, it will be parsed as an HTTP request.
+void restfulServerPoll() {
   word pos = ether.packetLoop(ether.packetReceive());
 
   if (pos) {
-    // bfill = ether.tcpOffset();
     char* data = (char *) Ethernet::buffer + pos;
 
     if (strncmp("GET /lcd", data, 8) == 0) {
-      // parse data
-      int begOfParams = 9;
-      int endOfFirstLine = String(data).indexOf("\r\n");
-      int lenOfParamLine = endOfFirstLine - begOfParams;
-      if (lenOfParamLine > 19)  // ensure buffers don't overflow from long requests
-        endOfFirstLine = 19 + begOfParams;
-
-      sprintf(stringBuffer, "%d", endOfFirstLine);
-      drawText(stringBuffer, 1);
-
-
-      String params = String(data).substring(begOfParams, lenOfParamLine);
-      strncpy(stringBuffer, data, 9);
-      drawText(stringBuffer, 2);
-      drawText(params, 3);
+      getParams(stringBuffer, 3, data);
+      drawText(stringBuffer, 3);
     }
 
-    memcpy_P(ether.tcpOffset(), page, sizeof page);
-    ether.httpServerReply(sizeof page - 1);
+    memcpy_P(ether.tcpOffset(), page, sizeof page); // populate the ethernet's "response buffer" with the response page
+    ether.httpServerReply(sizeof page - 1);  // transmit this many chars of the response buffer to the client
   }
-
-
-  // if (millis() > timer) {    // cheap trick to fire only once every 5 seconds...
-  //   requestCount++;
-  //   timer = millis() + 5000; // Set timer to 5 seconds in the future
-  //   Serial.println();
-  //   Serial.print("<<< REQ ");
-  //
-  //   sprintf(stringBuffer,"Req Num: %d", requestCount);
-  //   drawText(stringBuffer, 2);
-  // }
 }
 
+
+// Assumes it's a GET request, and has no controller, just an action,
+// e.g. "curl example.com/lcd?m=hi"
+// This function will return "m=hi"
+void getParams(char *buff, int actionLength, const char *reqData) {
+  int begOffsetOfParams = actionLength + 5 + 1;  // e.g. len("GET /") + len("action")
+
+  int endOfFirstLine = String(reqData).indexOf("\r\n");
+  int lenOfParamLine = endOfFirstLine - begOffsetOfParams;
+  if (lenOfParamLine > 19)  // ensure buffers don't overflow from long requests
+    endOfFirstLine = 19 + begOffsetOfParams;
+
+  String params = String(reqData).substring(begOffsetOfParams, lenOfParamLine);
+  // strncpy(buff, reqData, begOffsetOfParams); // copy the first part
+  params.toCharArray(buff, lenOfParamLine);
+  // strncpy(buff, params);
+}
+
+
+// This function performs web requests, but won't do so more frequently than
+// once every 5 seconds.
+void performWebRequests() {
+  if (millis() > timer) {    // cheap trick to fire only once every 5 seconds...
+    requestCount++;
+    timer = millis() + 5000; // Set timer to 5 seconds in the future
+    Serial.println();
+    Serial.print("<<< REQ ");
+
+    sprintf(stringBuffer,"Req Num: %d", requestCount);
+    drawText(stringBuffer, 2);
+  }
+}
 
 // void EtherCard::browseUrl
 //           path_part              "filename"
@@ -103,6 +117,7 @@ static void my_callback (byte status, word off, word len) {
   Serial.print((const char*) Ethernet::buffer + off);
   Serial.println("...");
 }
+
 
 void initEthernet() {
   if (ether.begin(sizeof Ethernet::buffer, mymac) == 0) {
