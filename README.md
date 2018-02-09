@@ -94,6 +94,14 @@ k   -> GND
 
 
 
+## Serial Debugging
+
+https://unix.stackexchange.com/questions/12359/how-can-i-monitor-serial-port-traffic
+
+```
+socat /dev/ttyUSB0,raw,echo=0 SYSTEM:'tee input.txt | socat - "PTY,link=/tmp/ttyV0,raw,echo=0,waitslave" | tee output.txt'
+```
+
 
 ## To Deploy
 
