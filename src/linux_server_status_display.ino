@@ -68,9 +68,6 @@ void restfulServerPoll() {
       Serial.println("");
       iterateOverParams(stringBuffer, processLcdCommands);
 
-      // iterateOverParams(params, callback);
-      // Given "a=1&b=2&c=3" call a callback 3 times, with values "a=1", "b=2", and "c=3"
-
       // getVal(param)
       // Given "m=message" return "message"
     }
@@ -81,12 +78,6 @@ void restfulServerPoll() {
 }
 
 void processLcdCommands(String param) {
-  // if (strncmp("m=", param, 2) {
-  //   drawText(param, 2);
-  // }
-  // if (strncmp("h=", param, 2) {
-  //   drawText(param, 3);
-  // }
   if (String("m=") == param.substring(0, 2)) {
     drawText(param, 2);
   }
@@ -95,24 +86,19 @@ void processLcdCommands(String param) {
   }
   if (String("h=") == param.substring(0, 2)) {
     drawText(param, 3);
-    drawText("GOT HERE", 3);
   }
 }
 
-
+// Given params = "a=1&b=2&c=3" call a callback 3 times,
+// with with single arguments such as "a=1", "b=2", and "c=3"
 void iterateOverParams(char *params, GeneralMessageFunction callback) {
   bool finished = false;
   int segmentBeginning = 0;
   int segmentEnd = 0;
-
-  // char thParams[] = "m=hihi";
-  String theParams = String(params);
-  // String String(theParams);
-  // String theParams = String.valueOf(charArray);
-
-  drawText(F("Doing Loop"), 3);
-
   int i = 0;
+
+  String theParams = String(params);
+
   // loop over each key=val& segment
   while (!finished) {
     i++;
@@ -120,33 +106,25 @@ void iterateOverParams(char *params, GeneralMessageFunction callback) {
     printIterationData(i);
 
     segmentEnd = theParams.indexOf("&", segmentBeginning);
+    printSegmentationData(segmentBeginning, segmentEnd);
 
     if (segmentEnd != -1) {
       finished = false;
     }
     else { // we're on the last thing
       finished = true;
-      segmentEnd = theParams.length() - 1;
+      segmentEnd = theParams.length();
     }
 
-    // FIXME:  I left off here...
-    // because I see the 'm' on the 4th row of the LCD, I know that all the functions are succeeding, but do I
-
-    printSegmentationData(segmentBeginning, segmentEnd);
-
-    String param = theParams.substring(segmentBeginning, segmentEnd - segmentBeginning);
+    String param = theParams.substring(segmentBeginning, segmentEnd);
     callback(param);
 
     // debug
     param.toCharArray(stringBuffer, param.length() + 1);
-    // drawText(stringBuffer, 3);
     Serial.print("  ");
     Serial.println(stringBuffer);
 
-
-    segmentBeginning = segmentEnd + 2;  // FIXME:  As I increase this, I slide-right the frame of the second param selection... but why?
-
-    // FIXME:  I need to fix serial debugging on this PoS....
+    segmentBeginning = segmentEnd + 1;
   }
 }
 
@@ -163,9 +141,7 @@ void getParams(char *buff, int actionLength, const char *reqData) {
     endOfFirstLine = 19 + begOffsetOfParams;
 
   String params = String(reqData).substring(begOffsetOfParams, lenOfParamLine);
-  // strncpy(buff, reqData, begOffsetOfParams); // copy the first part
   params.toCharArray(buff, lenOfParamLine);
-  // strncpy(buff, params);
 }
 
 
@@ -254,4 +230,7 @@ void printSegmentationData(int segmentBeginning, int segmentEnd) {
   Serial.print("  segmentEnd = ");
   Serial.print(segmentEnd, DEC);
   Serial.println("");
+
+  Serial.print("  WORD:  ");
+  Serial.print("");
 }
