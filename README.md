@@ -46,7 +46,7 @@ pin 10: GND
 SO  -> pin 12
 SI  -> pin 11
 SCK -> pin 13
-CS  -> pin 8
+CS  -> pin 10
 VCC -> 3.3v
 GND -> GND
 ```
@@ -78,7 +78,7 @@ GND -> GND
 vss -> GND
 vdd -> 5v
 v0  -> ((POT middle pin))
-rs  -> pin 10
+rs  -> pin 8
 rw  -> GND
 e   -> pin 9
 .

@@ -1,6 +1,6 @@
 // LCD STUFF
 #include <LiquidCrystal.h>
-LiquidCrystal LCD(10, 9, 5, 4, 3, 2);  //Create Liquid Crystal Object called LCD
+LiquidCrystal LCD(8, 9, 5, 4, 3, 2);  //Create Liquid Crystal Object called LCD
 
 // BACKLIGHT
 int ledPin = 6;
@@ -9,7 +9,7 @@ int newFadeValue = 255;
 
 // ETHERNET STUFF
 #include <EtherCard.h>
-int ethernetCsPin = 8;
+int ethernetCsPin = 10;
 
 #define STATIC 1  // set to 1 to disable DHCP (adjust myip/gwip values below)
 
