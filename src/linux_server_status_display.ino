@@ -11,6 +11,11 @@ static byte myip[] = { 192,168,1,200 };
 static byte gwip[] = { 192,168,1,1 };
 #endif
 
+// Backlight
+int ledPin = 6;
+int fadeValue = 0;
+int newFadeValue = 255;
+
 // ethernet mac address - must be unique on your network
 static byte mymac[] = { 0x74,0x69,0x69,0x2D,0x30,0x31 };
 byte Ethernet::buffer[700]; // tcp/ip send and receive buffer
@@ -44,6 +49,11 @@ void setup() {
 
 void loop() {
   restfulServerPoll();
+
+  if (newFadeValue != fadeValue) {
+    fadeValue = newFadeValue;
+    analogWrite(ledPin, fadeValue);
+  }
   // performWebRequests()
 }
 
@@ -57,9 +67,8 @@ void restfulServerPoll() {
 
     if (strncmp("GET /lcd", data, 8) == 0) {
       ether.httpServerReplyAck(); // send ack to the request so the client doesn't re-send it's request
-
+      drawText("", 0);
       getParams(stringBuffer, 3, data);
-      drawText(stringBuffer, 2);
 
       Serial.println("\nIterating Over Params\n");
       iterateOverParams(stringBuffer, processLcdCommands);
@@ -76,15 +85,26 @@ void processLcdCommands(String param) {
   getVal(val, param);
   printParamData(param, key, val);
 
-  if (String("m=") == param.substring(0, 2)) {
-    LCD.clear();
-    drawText(param, 2);
+  if (key == "m0") {
+    drawText(val, 0);
   }
-  else if (String("h=") == param.substring(0, 2)) {
-    drawText(param, 3);
+  else if (key == "m1") {
+    drawText(val, 1);
+  }
+  else if (key == "m2") {
+    drawText(val, 2);
+  }
+  else if (key == "m3") {
+    drawText(val, 3);
+  }
+  else if (key == "b") {
+    // b set's the power levels of the backlight: 100 for fully on, and 0 for off
+    float backlight_brightness = val.toFloat();
+    newFadeValue = (int)(backlight_brightness * 0.01 * 255.0);
   }
   else {
-    drawText(param, 3);
+    Serial.print("Recieved param that I didn't know what to do with: ");
+    Serial.print(param);
   }
 }
 
@@ -163,7 +183,7 @@ void performWebRequests() {
     Serial.print("<<< REQ ");
 
     sprintf(stringBuffer,"Req Num: %d", requestCount);
-    drawText(stringBuffer, 2);
+    Serial.println(stringBuffer);
   }
 }
 
@@ -191,7 +211,6 @@ static void my_callback (byte status, word off, word len) {
 void initEthernet() {
   if (ether.begin(sizeof Ethernet::buffer, mymac) == 0) {
     Serial.println( F("Failed to access Ethernet controller") );
-    drawText("FAILED access", 0);
   }
   #if STATIC
     ether.staticSetup(myip, gwip);

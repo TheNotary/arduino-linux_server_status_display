@@ -69,8 +69,8 @@ GND -> GND
 #12: d5
 #13: d6
 #14: d7
-#15: a (backlight 5v)
-#16: k (backlight gnd)
+#15: a (backlight)
+#16: k (backlight)
 ```
 
 (LCD -> Arduino)
@@ -88,18 +88,15 @@ d4  -> pin 5
 d5  -> pin 4
 d6  -> pin 3
 d7  -> pin 2
-a   -> 5v
+a   -> 220ohm -> pin 6
 k   -> GND
 ```
 
 
 
 ## Serial Debugging
-
-https://unix.stackexchange.com/questions/12359/how-can-i-monitor-serial-port-traffic
-
 ```
-socat /dev/ttyUSB0,raw,echo=0 SYSTEM:'tee input.txt | socat - "PTY,link=/tmp/ttyV0,raw,echo=0,waitslave" | tee output.txt'
+platformio device monitor
 ```
 
 
