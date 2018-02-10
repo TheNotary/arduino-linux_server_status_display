@@ -1,6 +1,15 @@
+// LCD STUFF
 #include <LiquidCrystal.h>
 LiquidCrystal LCD(10, 9, 5, 4, 3, 2);  //Create Liquid Crystal Object called LCD
+
+// BACKLIGHT
+int ledPin = 6;
+int fadeValue = 0;
+int newFadeValue = 255;
+
+// ETHERNET STUFF
 #include <EtherCard.h>
+int ethernetCsPin = 8;
 
 #define STATIC 1  // set to 1 to disable DHCP (adjust myip/gwip values below)
 
@@ -11,15 +20,11 @@ static byte myip[] = { 192,168,1,200 };
 static byte gwip[] = { 192,168,1,1 };
 #endif
 
-// Backlight
-int ledPin = 6;
-int fadeValue = 0;
-int newFadeValue = 255;
-
 // ethernet mac address - must be unique on your network
 static byte mymac[] = { 0x74,0x69,0x69,0x2D,0x30,0x31 };
 byte Ethernet::buffer[700]; // tcp/ip send and receive buffer
 const char website[] PROGMEM = "192.168.1.1";  // /api/button0
+
 const char controller[] PROGMEM = "/api/";
 char   stringBuffer[19 + 1];  //buffer used to format a line (+1 is for trailing 0)
 static uint32_t timer;
@@ -36,7 +41,6 @@ const char page[] PROGMEM =
 "\r\n\r\n";
 
 typedef void (*GeneralMessageFunction) (String param);  // define a callback function type
-
 
 void setup() {
   Serial.begin(9600);
@@ -209,7 +213,7 @@ static void my_callback (byte status, word off, word len) {
 
 
 void initEthernet() {
-  if (ether.begin(sizeof Ethernet::buffer, mymac) == 0) {
+  if (ether.begin(sizeof Ethernet::buffer, mymac, ethernetCsPin) == 0) {
     Serial.println( F("Failed to access Ethernet controller") );
   }
   #if STATIC
