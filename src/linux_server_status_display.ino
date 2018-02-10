@@ -35,12 +35,10 @@ typedef void (*GeneralMessageFunction) (String param);  // define a callback fun
 
 void setup() {
   Serial.begin(9600);
-
   LCD.begin(20, 4);
+
   drawText(F("Initializing Net"));
-
   initEthernet();
-
   drawText(F("Beginning Loop"), 1);
 }
 
@@ -49,7 +47,7 @@ void loop() {
   // performWebRequests()
 }
 
-// this function polls the ethernet device's data buffer to see if a TCP packet
+// This function polls the ethernet device's data buffer to see if a TCP packet
 // has come in.  If so, it will be parsed as an HTTP request.
 void restfulServerPoll() {
   word pos = ether.packetLoop(ether.packetReceive());
@@ -63,13 +61,8 @@ void restfulServerPoll() {
       getParams(stringBuffer, 3, data);
       drawText(stringBuffer, 2);
 
-      Serial.println("");
-      Serial.println("Iterating Over Params");
-      Serial.println("");
+      Serial.println("\nIterating Over Params\n");
       iterateOverParams(stringBuffer, processLcdCommands);
-
-      // getVal(param)
-      // Given "m=message" return "message"
     }
 
     memcpy_P(ether.tcpOffset(), page, sizeof page); // populate the ethernet's "response buffer" with the response page
@@ -78,15 +71,33 @@ void restfulServerPoll() {
 }
 
 void processLcdCommands(String param) {
+  String key, val;
+  getKey(key, param);
+  getVal(val, param);
+  printParamData(param, key, val);
+
   if (String("m=") == param.substring(0, 2)) {
+    LCD.clear();
     drawText(param, 2);
+  }
+  else if (String("h=") == param.substring(0, 2)) {
+    drawText(param, 3);
   }
   else {
     drawText(param, 3);
   }
-  if (String("h=") == param.substring(0, 2)) {
-    drawText(param, 3);
-  }
+}
+
+// Given "m=message" returns "m"
+void getKey(String &dest, String param) {
+  int segmentEnd = param.indexOf("=");
+  dest = param.substring(0, segmentEnd);
+}
+
+// Given "m=message" returns "message"
+void getVal(String &dest, String param) {
+  int segmentBeginning = param.indexOf("=") + 1;
+  dest = param.substring(segmentBeginning);
 }
 
 // Given params = "a=1&b=2&c=3" call a callback 3 times,
@@ -103,10 +114,9 @@ void iterateOverParams(char *params, GeneralMessageFunction callback) {
   while (!finished) {
     i++;
 
-    printIterationData(i);
-
     segmentEnd = theParams.indexOf("&", segmentBeginning);
-    printSegmentationData(segmentBeginning, segmentEnd);
+    // printIterationData(i);
+    // printSegmentationData(segmentBeginning, segmentEnd);
 
     if (segmentEnd != -1) {
       finished = false;
@@ -119,11 +129,7 @@ void iterateOverParams(char *params, GeneralMessageFunction callback) {
     String param = theParams.substring(segmentBeginning, segmentEnd);
     callback(param);
 
-    // debug
-    param.toCharArray(stringBuffer, param.length() + 1);
-    Serial.print("  ");
-    Serial.println(stringBuffer);
-
+    // reset for next iteration
     segmentBeginning = segmentEnd + 1;
   }
 }
@@ -233,4 +239,13 @@ void printSegmentationData(int segmentBeginning, int segmentEnd) {
 
   Serial.print("  WORD:  ");
   Serial.print("");
+}
+
+void printParamData(String param, String key, String val) {
+  Serial.print("  Param:");
+  Serial.println(param);
+  Serial.print("    Key:  ");
+  Serial.println(key);
+  Serial.print("    Val:  ");
+  Serial.println(val);
 }
