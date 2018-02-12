@@ -48,7 +48,7 @@ void setup() {
 
   drawText(F("Initializing Net"));
   initEthernet();
-  drawText(F("Beginning Loop"), 1);
+  drawText(F("Network Initialized"));
 }
 
 void loop() {
@@ -58,7 +58,7 @@ void loop() {
     fadeValue = newFadeValue;
     analogWrite(ledPin, fadeValue);
   }
-  // performWebRequests()
+  // performWebRequests()  // Should I test network connectivity to the gateway?
 }
 
 // This function polls the ethernet device's data buffer to see if a TCP packet
